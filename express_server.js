@@ -51,6 +51,12 @@ app.listen(PORT, () => {
 
 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
+/**
+ * Generates a random string from characters variable
+ * @param {Number} Number
+ * @returns {Number}
+ */
+
 const generateRandomString = function(length) {
   let result = '';
   const charactersLength = characters.length;
