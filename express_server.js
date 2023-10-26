@@ -37,10 +37,18 @@ app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
+app.get('/u/:id', function(req, res) {
+  const longURL = urlDatabase[req.params.id];
+  if (longURL) {
+    res.redirect(longURL);
+    return;
+  }
+  res.status(404).json({error: 'Short URL not found, redirecting you back to TinyApp.'});
+});
+
 app.post('/urls', function(req, res) {
   let key = generateRandomString(6);
   urlDatabase[key] = req.body.longURL;
-  console.log(req.body);
   res.redirect('/urls/' + key);
 });
 
