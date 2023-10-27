@@ -1,3 +1,4 @@
+
 const express = require('express');
 const app = express();
 const PORT = 8080; // default port 8080
@@ -32,7 +33,6 @@ app.get('/', (req, res) => {
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
-
 app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
@@ -52,6 +52,11 @@ app.post('/urls', function(req, res) {
   res.redirect('/urls/' + key);
 });
 
+app.post('/urls/:id/delete', function(req, res) {
+  const id = req.params.id;
+  delete urlDatabase[id];
+  res.redirect('/urls');
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
