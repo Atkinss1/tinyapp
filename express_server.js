@@ -55,7 +55,18 @@ app.post('/urls', function(req, res) {
 app.post('/urls/:id/delete', function(req, res) {
   const id = req.params.id;
   delete urlDatabase[id];
+  console.log('delete');
   res.redirect('/urls');
+});
+
+app.post('/urls/:id', function(req, res) {
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect('urls');
+});
+
+app.get('/edit/:id', function(req, res) {
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
+  res.render('urls_show', templateVars);
 });
 
 app.listen(PORT, () => {
