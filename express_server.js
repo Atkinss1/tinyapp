@@ -1,5 +1,6 @@
 
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -11,9 +12,13 @@ const urlDatabase = {
 };
 
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.get('/urls', function(req, res) {
-  const templateVars = { urls: urlDatabase};
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render('urls_index', templateVars);
 });
 
@@ -22,7 +27,10 @@ app.get('/urls/new', function(req, res) {
 });
 
 app.get('/urls/:id', function(req, res) {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id]
+  };
   res.render('urls_show', templateVars);
 });
 
@@ -60,16 +68,19 @@ app.post('/urls/:id/delete', function(req, res) {
 
 app.post('/urls/:id', function(req, res) {
   urlDatabase[req.params.id] = req.body.longURL;
-  res.redirect('urls');
+  res.redirect('/urls');
 });
 
 app.get('/edit/:id', function(req, res) {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id]
+  };
   res.render('urls_show', templateVars);
 });
 
 app.post('/login', function(req, res) {
-  let username = req.body.username;
+  const { username } = req.body;
   res.cookie('username', username);
   res.redirect('/urls');
 });
