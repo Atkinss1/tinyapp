@@ -68,6 +68,12 @@ app.get('/edit/:id', function(req, res) {
   res.render('urls_show', templateVars);
 });
 
+app.post('/login', function(req, res) {
+  let username = req.body.username;
+  res.cookie('username', username);
+  res.redirect('/urls');
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
