@@ -23,7 +23,11 @@ app.get('/urls', function(req, res) {
 });
 
 app.get('/urls/new', function(req, res) {
-  res.render('urls_new');
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
+  res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:id', function(req, res) {
