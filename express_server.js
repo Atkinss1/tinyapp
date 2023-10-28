@@ -33,7 +33,8 @@ app.get('/urls/new', function(req, res) {
 app.get('/urls/:id', function(req, res) {
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id]
+    longURL: urlDatabase[req.params.id],
+    username: req.cookies["username"]
   };
   res.render('urls_show', templateVars);
 });
@@ -78,7 +79,8 @@ app.post('/urls/:id', function(req, res) {
 app.get('/edit/:id', function(req, res) {
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id]
+    longURL: urlDatabase[req.params.id],
+    username: req.cookies["username"]
   };
   res.render('urls_show', templateVars);
 });
@@ -86,6 +88,12 @@ app.get('/edit/:id', function(req, res) {
 app.post('/login', function(req, res) {
   const { username } = req.body;
   res.cookie('username', username);
+  res.redirect('/urls');
+});
+
+app.post('/logout', function(req, res) {
+  const { username } = req.body;
+  res.clearCookie('username', username);
   res.redirect('/urls');
 });
 
