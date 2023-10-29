@@ -7,10 +7,25 @@ const PORT = 8080; // default port 8080
 // templating engine
 app.set('view engine','ejs');
 
-// in memory Database
+// in memory Database for URLs
 const urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://www.google.com'
+};
+
+// in memory Database for Users
+
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
 };
 
 // middleware
@@ -30,6 +45,7 @@ app.get('/urls', function(req, res) {
 app.get('/urls/new', function(req, res) {
   const templateVars = {
     urls: urlDatabase,
+    username: req.cookies["username"]
   };
   res.render('urls_new', templateVars);
 });
@@ -101,9 +117,30 @@ app.post('/logout', function(req, res) {
   res.redirect('/urls');
 });
 
+// display registration page
 app.get('/register', (req, res) => {
-  res.render('urls_login');
+  res.render('urls_register');
 });
+
+// user registers, user info added to database
+app.post('/register', (req, res) => {
+  let uniqueID = generateRandomString(6);
+  const { email, password } = req.body;
+  users[uniqueID] = {
+    id: uniqueID,
+    email,
+    password
+  };
+  res.cookie('userID', uniqueID);
+  console.log(users);
+  console.log(res.cookie);
+  res.redirect('/urls');
+});
+
+// user2RandomID: {
+//     id: "user2RandomID",
+//     email: "user2@example.com",
+//     password: "dishwasher-funk",
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
