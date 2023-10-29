@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Register</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+  </head>
+  <body>
+    <%- include('partials/_header', username) %>
+    <h1>Register</h1>
+    <div>
+    <form action="/register" method="post">
+      <p>Username:
+        <input type="email" name="email" required= "required" placeholder="email">
+      </p>
+      <p>Password:
+        <input type="password" name="password" required= "required" placeholder="password">
+      </p>
+      <button type="submit" value="register">Register</button>
+    </form>
+    </div>
+    <script src="" async defer></script>
+  </body>
+</html>
