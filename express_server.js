@@ -13,20 +13,6 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com'
 };
 
-// in memory Database for Users
-
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
-};
 
 // middleware
 app.use(express.urlencoded({ extended: true }));
@@ -36,7 +22,7 @@ app.use(cookieParser());
 app.get('/urls', function(req, res) {
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    username: req.cookies['username']
   };
   res.render('urls_index', templateVars);
 });
@@ -45,7 +31,7 @@ app.get('/urls', function(req, res) {
 app.get('/urls/new', function(req, res) {
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    username: req.cookies['username']
   };
   res.render('urls_new', templateVars);
 });
@@ -55,6 +41,7 @@ app.get('/urls/:id', function(req, res) {
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
+    username: req.cookies['username']
   };
   res.render('urls_show', templateVars);
 });
@@ -99,6 +86,7 @@ app.get('/edit/:id', function(req, res) {
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
+    username: req.cookies['username']
   };
   res.render('urls_show', templateVars);
 });
@@ -117,30 +105,6 @@ app.post('/logout', function(req, res) {
   res.redirect('/urls');
 });
 
-// display registration page
-app.get('/register', (req, res) => {
-  res.render('urls_register');
-});
-
-// user registers, user info added to database
-app.post('/register', (req, res) => {
-  let uniqueID = generateRandomString(6);
-  const { email, password } = req.body;
-  users[uniqueID] = {
-    id: uniqueID,
-    email,
-    password
-  };
-  res.cookie('userID', uniqueID);
-  console.log(users);
-  console.log(res.cookie);
-  res.redirect('/urls');
-});
-
-// user2RandomID: {
-//     id: "user2RandomID",
-//     email: "user2@example.com",
-//     password: "dishwasher-funk",
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
@@ -161,4 +125,20 @@ const generateRandomString = function(length) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
+};
+
+/**
+ *Checks users email to users database, if true. Returns userID.
+ * @param {email} string,
+ * @param {object} object,
+ * @returns {userID}
+ */
+
+const getUserByEmail = function(email, database) {
+  for (let userID in database) {
+    if (database[userID].email === email) {
+      return database[userID];
+    }
+  }
+  return null;
 };
