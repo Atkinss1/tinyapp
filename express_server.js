@@ -32,28 +32,34 @@ app.use(cookieParser());
 
 // display page with urls id table
 app.get('/urls', function(req, res) {
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id];
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies['username']
+    user
   };
   res.render('urls_index', templateVars);
 });
 
 // display create new url page
 app.get('/urls/new', function(req, res) {
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id];
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies['username']
+    user
   };
   res.render('urls_new', templateVars);
 });
 
 // display page with long url with its shortened form
 app.get('/urls/:id', function(req, res) {
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id];
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies['username']
+    user
   };
   res.render('urls_show', templateVars);
 });
@@ -95,45 +101,55 @@ app.post('/urls/:id', function(req, res) {
 
 // allows user to edit long url
 app.get('/edit/:id', function(req, res) {
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id]
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies['username']
+    user
   };
   res.render('urls_show', templateVars);
 });
-
+//! This is still just a login text box with no password
 // user sends username, save cookie
 app.post('/login', function(req, res) {
-  const { username } = req.body;
-  res.cookie('username', username);
+  res.cookie('user_id');
   res.redirect('/urls');
 });
 
 // user presses logout button, delete cookie
 app.post('/logout', function(req, res) {
-  const { username } = req.body;
-  res.clearCookie('username', username);
+  res.clearCookie('user_id');
+  console.log(users);
   res.redirect('/urls');
 });
 
+// displays register page
 app.get('/register', (req, res) => {
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id]
   const templateVars = {
-    username: req.cookies['username']
+    user
   };
   res.render('urls_register', templateVars);
 });
 
+// user registers with email and password
 app.post('/register', (req, res) => {
-  const { email, password } = req.body;
-  let userID = generateRandomString(6);
-  users[userID] = {
-    id: userID,
-    email: email,
-    password: password
+  const { email, password } = req.body; // grab email and password from body
+  const id = generateRandomString(6); // generate random ID
+  if (email || password === undefined) {
+    return res.status(400).send('Please enter a username and/or password');
+  }
+  if (getUserByEmail(email, users)) {
+    return res.status(400).send('Email is already registered');
+  }
+  users[id] = {
+    id,
+    email,
+    password,
   };
-
-  res.cookie('userID', userID);
+  res.cookie('user_id', id); // setting cookie with user_id as a key, id as a value
   res.redirect('/urls');
 });
 
@@ -168,8 +184,8 @@ const generateRandomString = function(length) {
 const getUserByEmail = function(email, database) {
   for (let userID in database) {
     if (database[userID].email === email) {
-      return database[userID];
+      return true;
     }
   }
-  return null;
+  return false;
 };
