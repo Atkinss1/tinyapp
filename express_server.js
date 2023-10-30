@@ -13,6 +13,18 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com'
 };
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
 
 // middleware
 app.use(express.urlencoded({ extended: true }));
@@ -105,6 +117,25 @@ app.post('/logout', function(req, res) {
   res.redirect('/urls');
 });
 
+app.get('/register', (req, res) => {
+  const templateVars = {
+    username: req.cookies['username']
+  };
+  res.render('urls_register', templateVars);
+});
+
+app.post('/register', (req, res) => {
+  const { email, password } = req.body;
+  let userID = generateRandomString(6);
+  users[userID] = {
+    id: userID,
+    email: email,
+    password: password
+  };
+
+  res.cookie('userID', userID);
+  res.redirect('/urls');
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
