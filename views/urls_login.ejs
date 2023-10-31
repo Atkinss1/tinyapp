@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet"
+     href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+     crossorigin="anonymous"
+     />
+  </head>
+  <%- include('partials/_header') %>
+  <body>
+    <form action="/login" method="post">
+      <input type="email" name="email" placeholder="email" required="required">
+      <input type="password" name="password" placeholder="password" required="required">
+      <button type="submit">Login</button>
+    </form>
+    
+    
+  </body>
+</html>
