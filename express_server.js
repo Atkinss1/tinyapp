@@ -121,23 +121,27 @@ app.get('/login', (req, res) => {
   res.render('urls_login', templateVars);
 });
 
-// user sends username, save cookie
+// user sends email, save cookie
 app.post('/login', function(req, res) {
   const { email, password } = req.body; // grab email and password from body
-  for (const user in users) {
-    if (users[user].email === email && users[user].password === password) {
-      res.cookie('user_id', users[user].id);
+  if (getUserByEmail(email, users)) {
+    if (confirmPassword(password, users)) {
+      for (const userID in users) {
+        res.cookie('user_id', users[userID].id);
+      }
       res.redirect('/urls');
     }
   }
-  res.status(400).send('Email and/or password was incorrect.');
+  res.status(403).send('Email and/or password was incorrect.');
+
 });
+
 
 // user presses logout button, delete cookie
 app.post('/logout', function(req, res) {
   res.clearCookie('user_id');
   console.log(users);
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 // displays register page
@@ -149,13 +153,13 @@ app.get('/register', (req, res) => {
   };
   res.render('urls_register', templateVars);
 });
-//! last work completed added handle registration errors for empty username or existing email in database
+
 // user registers with email and password
 app.post('/register', (req, res) => {
   const { email, password } = req.body; // grab email and password from body
   const id = generateRandomString(6); // generate random ID
   if (!email || !password) {
-    return res.status(400).send('Please enter a username and/or password');
+    return res.status(400).send('Please enter a email and/or password');
     // todo: maybe add a setTimeout to redirect user back to /urls
   }
   if (getUserByEmail(email, users)) {
@@ -206,4 +210,19 @@ const getUserByEmail = function(email, database) {
     }
   }
   return null;
+};
+
+const confirmPassword = function(password, database) {
+  for (let userID in database) {
+    if (database[userID].password === password) {
+      return true;
+    }
+  }
+  return null;
+};
+
+const setCookie = function(database) {
+  for (let userID in database) {
+    res.cookie('user_id', database[userID].id);
+  }
 };
