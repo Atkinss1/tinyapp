@@ -124,14 +124,13 @@ app.get('/login', (req, res) => {
 // user sends email, save cookie
 app.post('/login', function(req, res) {
   const { email, password } = req.body; // grab email and password from body
-  if (getUserByEmail(email, users)) {
-    if (confirmPassword(password, users)) {
-      for (const userID in users) {
-        res.cookie('user_id', users[userID].id);
-      }
-      res.redirect('/urls');
+  if (validateUser(email, password, users)) {
+    for (const userID in users) {
+      res.cookie('user_id', users[userID].id);
     }
+    res.redirect('/urls');
   }
+  
   res.status(403).send('Email and/or password was incorrect.');
 
 });
@@ -140,7 +139,6 @@ app.post('/login', function(req, res) {
 // user presses logout button, delete cookie
 app.post('/logout', function(req, res) {
   res.clearCookie('user_id');
-  console.log(users);
   res.redirect('/login');
 });
 
@@ -212,17 +210,12 @@ const getUserByEmail = function(email, database) {
   return null;
 };
 
-const confirmPassword = function(password, database) {
+const validateUser = function (email, password, database) {
   for (let userID in database) {
-    if (database[userID].password === password) {
+    let user = database[userID];
+    if (user.email === email && user.password === password) {
       return true;
     }
   }
   return null;
-};
-
-const setCookie = function(database) {
-  for (let userID in database) {
-    res.cookie('user_id', database[userID].id);
-  }
 };
