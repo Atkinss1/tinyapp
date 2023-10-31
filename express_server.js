@@ -16,8 +16,8 @@ const urlDatabase = {
 const users = {
   userRandomID: {
     id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    email: "test@test.com",
+    password: "test",
   },
   user2RandomID: {
     id: "user2RandomID",
@@ -102,7 +102,7 @@ app.post('/urls/:id', function(req, res) {
 // allows user to edit long url
 app.get('/edit/:id', function(req, res) {
   const user_id = req.cookies['user_id'];
-  const user = users[user_id]
+  const user = users[user_id];
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
@@ -110,11 +110,27 @@ app.get('/edit/:id', function(req, res) {
   };
   res.render('urls_show', templateVars);
 });
-//! This is still just a login text box with no password
+
+app.get('/login', (req, res) => {
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id];
+  const templateVars = {
+    user
+  };
+  
+  res.render('urls_login', templateVars);
+});
+
 // user sends username, save cookie
 app.post('/login', function(req, res) {
-  res.cookie('user_id');
-  res.redirect('/urls');
+  const { email, password } = req.body; // grab email and password from body
+  for (const user in users) {
+    if (users[user].email === email && users[user].password === password) {
+      res.cookie('user_id', users[user].id);
+      res.redirect('/urls');
+    }
+  }
+  res.status(400).send('Email and/or password was incorrect.');
 });
 
 // user presses logout button, delete cookie
@@ -127,22 +143,24 @@ app.post('/logout', function(req, res) {
 // displays register page
 app.get('/register', (req, res) => {
   const user_id = req.cookies['user_id'];
-  const user = users[user_id]
+  const user = users[user_id];
   const templateVars = {
     user
   };
   res.render('urls_register', templateVars);
 });
-
+//! last work completed added handle registration errors for empty username or existing email in database
 // user registers with email and password
 app.post('/register', (req, res) => {
   const { email, password } = req.body; // grab email and password from body
   const id = generateRandomString(6); // generate random ID
-  if (email || password === undefined) {
+  if (!email || !password) {
     return res.status(400).send('Please enter a username and/or password');
+    // todo: maybe add a setTimeout to redirect user back to /urls
   }
   if (getUserByEmail(email, users)) {
     return res.status(400).send('Email is already registered');
+    // todo: maybe add a setTimeout to redirect user back to /urls
   }
   users[id] = {
     id,
@@ -187,5 +205,5 @@ const getUserByEmail = function(email, database) {
       return true;
     }
   }
-  return false;
+  return null;
 };
