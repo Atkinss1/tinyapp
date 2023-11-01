@@ -124,15 +124,13 @@ app.get('/login', (req, res) => {
 // user sends email, save cookie
 app.post('/login', function(req, res) {
   const { email, password } = req.body; // grab email and password from body
-  if (validateUser(email, password, users)) {
-    for (const userID in users) {
-      res.cookie('user_id', users[userID].id);
-    }
+  const user = validateUser(email, password, users); // comparing email/password with database
+
+  if (user) {
+    res.cookie('user_id', user.id);
     res.redirect('/urls');
   }
-  
   res.status(403).send('Email and/or password was incorrect.');
-
 });
 
 
@@ -210,11 +208,20 @@ const getUserByEmail = function(email, database) {
   return null;
 };
 
-const validateUser = function (email, password, database) {
+/**
+ * verifies users email and password in the database
+ *
+ * @param {string} email
+ * @param {any} password
+ * @param {object} database
+ * @returns {boolean}
+ */
+
+const validateUser = function(email, password, database) {
   for (let userID in database) {
     let user = database[userID];
     if (user.email === email && user.password === password) {
-      return true;
+      return user;
     }
   }
   return null;
