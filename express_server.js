@@ -126,9 +126,9 @@ app.post('/login', function(req, res) {
   const { email, password } = req.body; // grab email and password from body
   const user = validateUser(email, password, users); // comparing email/password with database
 
-  if (user) {
+  if (user) { // user is user object
     res.cookie('user_id', user.id);
-    res.redirect('/urls');
+    return res.redirect('/urls');
   }
   res.status(403).send('Email and/or password was incorrect.');
 });
@@ -156,11 +156,9 @@ app.post('/register', (req, res) => {
   const id = generateRandomString(6); // generate random ID
   if (!email || !password) {
     return res.status(400).send('Please enter a email and/or password');
-    // todo: maybe add a setTimeout to redirect user back to /urls
   }
   if (getUserByEmail(email, users)) {
     return res.status(400).send('Email is already registered');
-    // todo: maybe add a setTimeout to redirect user back to /urls
   }
   users[id] = {
     id,
@@ -209,7 +207,7 @@ const getUserByEmail = function(email, database) {
 };
 
 /**
- * verifies users email and password in the database
+ * verifies users email and password in the database and returns user object
  *
  * @param {string} email
  * @param {any} password
