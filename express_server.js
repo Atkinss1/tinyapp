@@ -98,6 +98,7 @@ app.post('/urls', function(req, res) {
 // user deletes url
 app.post('/urls/:id/delete', function(req, res) {
   if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
+    res.send('You do not have permissions to create a shortened URL. Please log in.\n');
     return res.redirect('/login');
   }
   const id = req.params.id;
@@ -108,7 +109,8 @@ app.post('/urls/:id/delete', function(req, res) {
 // assigns shortURL when user updates longURL
 app.post('/urls/:id', function(req, res) {
   if (!req.cookies['user_id']) { // check if user is logged in.
-    return res.send('You do not have permissions to create a shortened URL. Please log in.\n');
+    res.send('You do not have permissions to create a shortened URL. Please log in.\n');
+    res.redirect('/login');
   }
   urlDatabase[req.params.id] = req.body.longURL;
   res.redirect('/urls');
