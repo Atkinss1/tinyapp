@@ -22,7 +22,7 @@
             </p>
             <form method="post" action="/urls/<%= id %>">
               <input type="text" name="longURL" placeholder="Update URL">
-              <button type="submit">Update</button>
+              <button type="submit" onclick="emptyInput()">Update</button>
             </form>
           </div>
         </div class = "card-footer text-muted"></div>
@@ -43,5 +43,8 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
+    <script>function emptyInput() {
+      alert("Invalid entry, please enter new URL to continue");
+    }</script>
   </body>
 </html>
