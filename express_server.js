@@ -32,8 +32,11 @@ app.use(cookieParser());
 
 // display page with urls id table
 app.get('/urls', function(req, res) {
-  const { email, password } = req.body;
-  const user = validateUser(email, password, users);
+  if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
+    return res.redirect('/login');
+  }
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id];
   const templateVars = {
     urls: urlDatabase,
     user
@@ -46,8 +49,8 @@ app.get('/urls/new', function(req, res) {
   if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
     return res.redirect('/login');
   }
-  const { email, password } = req.body;
-  const user = validateUser(email, password, users);
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id];
   const templateVars = {
     urls: urlDatabase,
     user
@@ -60,8 +63,8 @@ app.get('/urls/:id', function(req, res) {
   if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
     return res.redirect('/login');
   }
-  const { email, password } = req.body;
-  const user = validateUser(email, password, users);
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id];
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
@@ -82,7 +85,7 @@ app.get('/u/:id', function(req, res) {
     res.redirect(longURL);
     return;
   }
-  res.status(404).json({error: 'Short URL not found, redirecting you back to TinyApp.'});
+  res.status(404).json({error: 'Short URL not found'});
 });
 
 // user inputs a long url, post then assigns new short url and stores it to database
@@ -112,6 +115,9 @@ app.post('/urls/:id', function(req, res) {
     res.send('You do not have permissions to create a shortened URL. Please log in.\n');
     res.redirect('/login');
   }
+  if (req.body.longURL === '') { // check if user tries to update with empty entry
+    return res.redirect(`/urls/${req.params.id}`);
+  }
   urlDatabase[req.params.id] = req.body.longURL;
   res.redirect('/urls');
 });
@@ -121,8 +127,8 @@ app.get('/edit/:id', function(req, res) {
   if (!req.cookies['user_id']) { // check if user is logged in.
     return res.redirect('/login');
   }
-  const { email, password } = req.body;
-  const user = validateUser(email, password, users);
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id];
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
@@ -132,11 +138,8 @@ app.get('/edit/:id', function(req, res) {
 });
 
 app.get('/login', (req, res) => {
-  if (req.cookies['user_id']) {
-    return res.redirect('/urls');
-  }
-  const { email, password } = req.body;
-  const user = validateUser(email, password, users);
+  const user_id = req.cookies['user_id'];
+  const user = users[user_id];
   const templateVars = {
     user
   };
@@ -165,9 +168,6 @@ app.post('/logout', function(req, res) {
 
 // displays register page
 app.get('/register', (req, res) => {
-  if (req.cookies['user_id']) {
-    return res.redirect('/urls');
-  }
   const user_id = req.cookies['user_id'];
   const user = users[user_id];
   const templateVars = {
@@ -183,7 +183,8 @@ app.post('/register', (req, res) => {
   if (!email || !password) {
     return res.status(400).send('Please enter a email and/or password');
   }
-  if (getUserByEmail(email, users)) {
+  const newEmail = getUserByEmail(email, users);
+  if (newEmail) {
     return res.status(400).send('Email is already registered');
   }
   users[id] = {
@@ -226,7 +227,7 @@ const generateRandomString = function(length) {
 const getUserByEmail = function(email, database) {
   for (let userID in database) {
     if (database[userID].email === email) {
-      return true;
+      return database[userID];
     }
   }
   return null;
