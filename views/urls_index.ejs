@@ -29,10 +29,10 @@
       </tr>
     </thead>
     <tbody>
-      <% for (let id in urls) { %>
+      <% for (let id in longURL) { %>
         <tr>
           <td><a href="/u/<%= id %>"><%= id %></a></td>
-          <td><%= urls[id]%></td>
+          <td><%= longURL[id]%></td>
           <td><form method="post" action="/urls/<%= id %>/delete">
             <button type="submit" value="delete">Delete</button>
           </form>
