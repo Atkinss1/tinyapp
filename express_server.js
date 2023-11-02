@@ -9,8 +9,14 @@ app.set('view engine','ejs');
 
 // in memory Database for URLs
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com'
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -37,8 +43,9 @@ app.get('/urls', function(req, res) {
   }
   const user_id = req.cookies['user_id'];
   const user = users[user_id];
+  const longURL = displayURLByID(urlDatabase, user_id);
   const templateVars = {
-    urls: urlDatabase,
+    longURL,
     user
   };
   res.render('urls_index', templateVars);
@@ -51,8 +58,9 @@ app.get('/urls/new', function(req, res) {
   }
   const user_id = req.cookies['user_id'];
   const user = users[user_id];
+  const longURL = displayURLByID(urlDatabase, user_id);
   const templateVars = {
-    urls: urlDatabase,
+    longURL,
     user
   };
   res.render('urls_new', templateVars);
@@ -65,9 +73,10 @@ app.get('/urls/:id', function(req, res) {
   }
   const user_id = req.cookies['user_id'];
   const user = users[user_id];
+  const longURL = displayURLByID(urlDatabase, user_id);
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL,
     user
   };
   res.render('urls_show', templateVars);
@@ -80,7 +89,7 @@ app.get('/urls.json', (req, res) => {
 
 // redirect to long url if short url is found in database
 app.get('/u/:id', function(req, res) {
-  const longURL = urlDatabase[req.params.id];
+  const longURL = redirectURL(urlDatabase, req.params.id);
   if (longURL) {
     return res.redirect(longURL);
   }
@@ -93,7 +102,10 @@ app.post('/urls', function(req, res) {
     return res.send('You do not have permissions to create a shortened URL. Please log in.\n');
   }
   let key = generateRandomString(6);
-  urlDatabase[key] = req.body.longURL;
+  urlDatabase[key] = {
+    longURL: req.body.longURL,
+    userID: req.cookies['user_id']
+  };
   res.redirect('/urls/' + key);
 });
 
@@ -128,9 +140,10 @@ app.get('/edit/:id', function(req, res) {
   }
   const user_id = req.cookies['user_id'];
   const user = users[user_id];
+  const longURL = displayURLByID(urlDatabase, user_id);
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL,
     user
   };
   res.render('urls_show', templateVars);
@@ -243,4 +256,36 @@ const validateUser = function(email, password, database) {
   const userArray = Object.values(database); // returns all user objects in database
   const user = userArray.find(user => user.email === email && user.password === password);
   return user || null;
+};
+
+/**
+ *
+ * @param {object} database
+ * @param {cookies} user_id
+ * @returns object
+ */
+const displayURLByID = function(database, user_id) {
+  let URLs = {};
+  for (const key in database) {
+    if (database[key].userID === user_id) {
+      URLs[key] = database[key].longURL;
+    }
+  }
+  return URLs || null;
+};
+
+/**
+ *
+ * @param {object} database
+ * @param {req.params.id} shortURL
+ * @returns longURL
+ */
+const redirectURL = function(database, shortURL) {
+  const urlArray = Object.keys(database);
+  const longURL = urlArray.find(key => key === shortURL);
+  
+  if (longURL) {
+    return database[longURL].longURL;
+  }
+  return null;
 };
