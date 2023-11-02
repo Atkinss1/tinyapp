@@ -243,11 +243,7 @@ const getUserByEmail = function(email, database) {
  */
 
 const validateUser = function(email, password, database) {
-  for (let userID in database) {
-    let user = database[userID];
-    if (user.email === email && user.password === password) {
-      return user;
-    }
-  }
-  return null;
+  const userArray = Object.values(database); // returns all user objects in database
+  const user = userArray.find(user => user.email === email && user.password === password);
+  return user || null;
 };
