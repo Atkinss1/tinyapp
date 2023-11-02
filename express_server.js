@@ -225,12 +225,9 @@ const generateRandomString = function(length) {
  */
 
 const getUserByEmail = function(email, database) {
-  for (let userID in database) {
-    if (database[userID].email === email) {
-      return database[userID];
-    }
-  }
-  return null;
+  const userArray = Object.values(database);
+  const user = userArray.find(user => user.email === email);
+  return user || null;
 };
 
 /**
