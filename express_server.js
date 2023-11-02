@@ -82,8 +82,7 @@ app.get('/urls.json', (req, res) => {
 app.get('/u/:id', function(req, res) {
   const longURL = urlDatabase[req.params.id];
   if (longURL) {
-    res.redirect(longURL);
-    return;
+    return res.redirect(longURL);
   }
   res.status(404).json({error: 'Short URL not found'});
 });
@@ -137,6 +136,7 @@ app.get('/edit/:id', function(req, res) {
   res.render('urls_show', templateVars);
 });
 
+// displays login page
 app.get('/login', (req, res) => {
   const user_id = req.cookies['user_id'];
   const user = users[user_id];
@@ -239,7 +239,7 @@ const getUserByEmail = function(email, database) {
  * @param {string} email
  * @param {any} password
  * @param {object} database
- * @returns {boolean}
+ * @returns {object}
  */
 
 const validateUser = function(email, password, database) {
