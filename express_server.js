@@ -69,7 +69,11 @@ app.get('/urls/new', function(req, res) {
 // display page with long url with its shortened form
 app.get('/urls/:id', function(req, res) {
   if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
-    return res.redirect('/login');
+    return res.status(403).send('You must be logged in to access this page.');
+  }
+  
+  if (validateURLPermission) {
+    return res.status(403).send('You do not own this shortURL, please return to the home page.');
   }
   const user_id = req.cookies['user_id'];
   const user = users[user_id];
@@ -99,21 +103,23 @@ app.get('/u/:id', function(req, res) {
 // user inputs a long url, post then assigns new short url and stores it to database
 app.post('/urls', function(req, res) {
   if (!req.cookies['user_id']) { // check if user is logged in.
-    return res.send('You do not have permissions to create a shortened URL. Please log in.\n');
+    return res.status(403).send('You must be logged in to access this page.');
+  }
+  if (req.body.longURL === '') {
+    return res.send('Invalid entry, please enter a URL');
   }
   let key = generateRandomString(6);
   urlDatabase[key] = {
     longURL: req.body.longURL,
     userID: req.cookies['user_id']
   };
-  res.redirect('/urls/' + key);
+  res.redirect('/urls');
 });
 
 // user deletes url
 app.post('/urls/:id/delete', function(req, res) {
   if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
-    res.send('You do not have permissions to create a shortened URL. Please log in.\n');
-    return res.redirect('/login');
+    return res.status(403).send('You must be logged in to access this page.');
   }
   const id = req.params.id;
   delete urlDatabase[id];
@@ -123,8 +129,7 @@ app.post('/urls/:id/delete', function(req, res) {
 // assigns shortURL when user updates longURL
 app.post('/urls/:id', function(req, res) {
   if (!req.cookies['user_id']) { // check if user is logged in.
-    res.send('You do not have permissions to create a shortened URL. Please log in.\n');
-    res.redirect('/login');
+    return res.status(403).send('You must be logged in to access this page.');
   }
   if (req.body.longURL === '') { // check if user tries to update with empty entry
     return res.redirect(`/urls/${req.params.id}`);
@@ -136,7 +141,7 @@ app.post('/urls/:id', function(req, res) {
 // allows user to edit long url
 app.get('/edit/:id', function(req, res) {
   if (!req.cookies['user_id']) { // check if user is logged in.
-    return res.redirect('/login');
+    return res.status(403).send('You must be logged in to access this page.');
   }
   const user_id = req.cookies['user_id'];
   const user = users[user_id];
@@ -286,6 +291,18 @@ const redirectURL = function(database, shortURL) {
   
   if (longURL) {
     return database[longURL].longURL;
+  }
+  return null;
+};
+
+const validateURLPermission = function(database, shortURL) {
+
+  // if the shortURL is not found in the user_id's object, return error message
+  const urlArray = Object.keys(database);
+  const url = urlArray.find(key => key === shortURL);
+  
+  if (url) {
+    return true;
   }
   return null;
 };
