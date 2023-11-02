@@ -38,8 +38,7 @@ app.use(cookieParser());
 
 // display page with urls id table
 app.get('/urls', function(req, res) {
-  const { email, password } = req.body;
-  if (!validateUser(email, password, users)) {
+  if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
     return res.redirect('/login');
   }
 
@@ -55,8 +54,7 @@ app.get('/urls', function(req, res) {
 
 // display create new url page
 app.get('/urls/new', function(req, res) {
-  const { email, password } = req.body;
-  if (!validateUser(email, password, users)) {
+  if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
     return res.redirect('/login');
   }
 
@@ -74,9 +72,8 @@ app.get('/urls/new', function(req, res) {
 app.get('/urls/:id', function(req, res) {
   const user_id = req.cookies['user_id'];
 
-  const { email, password } = req.body;
-  if (!validateUser(email, password, users)) {
-    return res.status(403).send('You must be logged in to access this page.');
+  if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
+    return res.redirect('/login');
   }
   
   const id = req.params.id;
@@ -109,9 +106,8 @@ app.get('/u/:id', function(req, res) {
 
 // user inputs a long url, post then assigns new short url and stores it to database
 app.post('/urls', function(req, res) {
-  const { email, password } = req.body;
-  if (!validateUser(email, password, users)) {
-    return res.status(403).send('You must be logged in to access this page.');
+  if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
+    return res.redirect('/login');
   }
   if (req.body.longURL === '') {
     return res.send('Invalid entry, please enter a URL');
@@ -128,9 +124,8 @@ app.post('/urls', function(req, res) {
 app.post('/urls/:id/delete', function(req, res) {
   const user_id = req.cookies['user_id'];
   
-  const { email, password } = req.body;
-  if (!validateUser(email, password, users)) {
-    return res.status(403).send('You must be logged in to access this page.');
+  if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
+    return res.redirect('/login');
   }
   
   const id = req.params.id;
@@ -144,9 +139,8 @@ app.post('/urls/:id/delete', function(req, res) {
 
 // assigns shortURL when user updates longURL
 app.post('/urls/:id', function(req, res) {
-  const { email, password } = req.body;
-  if (!validateUser(email, password, users)) {
-    return res.status(403).send('You must be logged in to access this page.');
+  if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
+    return res.redirect('/login');
   }
   if (req.body.longURL === '') { // check if user tries to update with empty entry
     return res.redirect(`/urls/${req.params.id}`);
@@ -159,9 +153,8 @@ app.post('/urls/:id', function(req, res) {
 app.get('/edit/:id', function(req, res) {
   const user_id = req.cookies['user_id'];
   
-  const { email, password } = req.body;
-  if (!validateUser(email, password, users)) {
-    return res.status(403).send('You must be logged in to access this page.');
+  if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
+    return res.redirect('/login');
   }
   
   const id = req.params.id;
