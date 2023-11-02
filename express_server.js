@@ -68,14 +68,16 @@ app.get('/urls/new', function(req, res) {
 
 // display page with long url with its shortened form
 app.get('/urls/:id', function(req, res) {
+  const user_id = req.cookies['user_id'];
+  const id = req.params.id;
+  
   if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
     return res.status(403).send('You must be logged in to access this page.');
   }
   
-  if (validateURLPermission) {
+  if (!validateURLPermission(urlDatabase, id, user_id)) {
     return res.status(403).send('You do not own this shortURL, please return to the home page.');
   }
-  const user_id = req.cookies['user_id'];
   const user = users[user_id];
   const longURL = displayURLByID(urlDatabase, user_id);
   const templateVars = {
@@ -118,10 +120,17 @@ app.post('/urls', function(req, res) {
 
 // user deletes url
 app.post('/urls/:id/delete', function(req, res) {
+  const user_id = req.cookies['user_id'];
+  const id = req.params.id;
+  
   if (!req.cookies['user_id']) { // if user is not logged in, redirect to login
     return res.status(403).send('You must be logged in to access this page.');
   }
-  const id = req.params.id;
+  
+  if (!validateURLPermission(urlDatabase, id, user_id)) {
+    return res.status(403).send('You do not own this shortURL, please return to the home page.');
+  }
+  
   delete urlDatabase[id];
   res.redirect('/urls');
 });
@@ -140,10 +149,17 @@ app.post('/urls/:id', function(req, res) {
 
 // allows user to edit long url
 app.get('/edit/:id', function(req, res) {
+  const user_id = req.cookies['user_id'];
+  const id = req.params.id;
+  
   if (!req.cookies['user_id']) { // check if user is logged in.
     return res.status(403).send('You must be logged in to access this page.');
   }
-  const user_id = req.cookies['user_id'];
+
+  if (!validateURLPermission(urlDatabase, id, user_id)) {
+    return res.status(403).send('You do not own this shortURL, please return to the home page.');
+  }
+
   const user = users[user_id];
   const longURL = displayURLByID(urlDatabase, user_id);
   const templateVars = {
@@ -295,14 +311,18 @@ const redirectURL = function(database, shortURL) {
   return null;
 };
 
-const validateURLPermission = function(database, shortURL) {
-
-  // if the shortURL is not found in the user_id's object, return error message
-  const urlArray = Object.keys(database);
-  const url = urlArray.find(key => key === shortURL);
-  
-  if (url) {
-    return true;
+/**
+ * iterates through database and validates shortURL matches database
+ *
+ * @param {Object} database
+ * @param {req.params.id} shortURL
+ * @returns Boolean
+ */
+const validateURLPermission = function(database, shortURL, user_id) {
+  for (const key in database) {
+    if (database[key].userID === user_id && key === shortURL) {
+      return true;
+    }
   }
-  return null;
+  return false;
 };
