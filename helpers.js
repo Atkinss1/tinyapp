@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const bcrypt = require('bcryptjs');
 
 /**
@@ -33,6 +34,7 @@ const validateUser = function(email, password, database) {
 };
 
 /**
+ * Check userDatabase and return stored URLs
  *
  * @param {object} database
  * @param {cookies} user_id
@@ -49,6 +51,7 @@ const displayURLByID = function(database, user_id) {
 };
 
 /**
+ * check if shortURL is stored in database and returns longURL
  *
  * @param {object} database
  * @param {req.params.id} shortURL
@@ -65,7 +68,7 @@ const redirectURL = function(database, shortURL) {
 };
 
 /**
- * iterates through database and validates shortURL matches database
+ * iterates through userDatabase and validates shortURL matches user_id in userDatabase
  *
  * @param {Object} database
  * @param {req.params.id} shortURL

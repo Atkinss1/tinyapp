@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const express = require('express');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
@@ -26,6 +27,7 @@ const urlDatabase = {
   },
 };
 
+// in memory Database for users
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -122,7 +124,7 @@ app.post('/urls', function(req, res) {
   if (req.body.longURL === '') {
     return res.send('Invalid entry, please enter a URL');
   }
-  let key = generateRandomString(6);
+  let key = generateRandomString(6); // generates shortURL key (stringLength)
   urlDatabase[key] = {
     longURL: req.body.longURL,
     userID: req.session.user_id
@@ -229,7 +231,7 @@ app.post('/register', (req, res) => {
   const user = users[user_id];
   const { email, password } = req.body; // grab email and password from body
   const id = generateRandomString(6); // generate random ID
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const hashedPassword = bcrypt.hashSync(password, 10); // encrypts password
   if (!email || !hashedPassword) {
     return res.status(400).send('Please enter a email and/or password');
   }
