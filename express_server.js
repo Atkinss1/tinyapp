@@ -50,7 +50,6 @@ app.use(cookieSession({
 // display page with urls id table
 app.get('/urls', function(req, res) {
   if (!req.session.user_id) { // if user is not logged in, redirect to login
-    console.log(req.body);
     return res.redirect('/login');
   }
 
@@ -191,7 +190,10 @@ app.get('/login', (req, res) => {
   const templateVars = {
     user
   };
-  
+
+  if (req.session.user_id) { // if use is logged in, redirect to /urls
+    return res.redirect('/urls');
+  }
   res.render('urls_login', templateVars);
 });
 
