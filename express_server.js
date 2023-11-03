@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 
+
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -24,7 +25,7 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "test@test.com",
-    password: "test",
+    password: "$2a$10$xlkr/IghFzBIlBWvII33zeh0xNKFrTHPHs32tjRIvsbWH7.YTcGti", // 123123
   },
   user2RandomID: {
     id: "user2RandomID",
@@ -189,6 +190,7 @@ app.post('/login', function(req, res) {
   const { email, password } = req.body; // grab email and password from body
   const user = validateUser(email, password, users); // comparing email/password with database
 
+
   if (user) { // user is user object
     res.cookie('user_id', user.id);
     return res.redirect('/urls');
@@ -216,9 +218,9 @@ app.get('/register', (req, res) => {
 // user registers with email and password
 app.post('/register', (req, res) => {
   const { email, password } = req.body; // grab email and password from body
-  const hashedPassword = bcrypt.hashSync(password, 10);
   const id = generateRandomString(6); // generate random ID
-  if (!email || !password) {
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  if (!email || !hashedPassword) {
     return res.status(400).send('Please enter a email and/or password');
   }
   const newEmail = getUserByEmail(email, users);
@@ -228,7 +230,7 @@ app.post('/register', (req, res) => {
   users[id] = {
     id,
     email,
-    password,
+    password: hashedPassword,
   };
   res.cookie('user_id', id); // setting cookie with user_id as a key, id as a value
   res.redirect('/urls');
@@ -279,7 +281,11 @@ const getUserByEmail = function(email, database) {
 
 const validateUser = function(email, password, database) {
   const userArray = Object.values(database); // returns all user objects in database
-  const user = userArray.find(user => user.email === email && user.password === password);
+  const user = userArray.find(user => {
+    const passwordMatches = bcrypt.compareSync(password, user.password);
+    return user.email === email && passwordMatches;
+  });
+  
   return user || null;
 };
 
