@@ -47,7 +47,7 @@ const displayURLByID = function(database, user_id) {
       URLs[key] = database[key].longURL;
     }
   }
-  return URLs || null;
+  return Object.keys(URLs).length > 0 ? URLs : null;
 };
 
 /**
