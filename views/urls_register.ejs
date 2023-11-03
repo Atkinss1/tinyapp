@@ -1,35 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
   <head>
-    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login | TinyApp</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet"
      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
      crossorigin="anonymous"
      />
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Register</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="">
   </head>
+  <%- include('partials/_header') %>
   <body>
-    <%- include('partials/_header') %>
-
-    <h1>Register</h1>
-    <div>
-    <form action="/register" method="post">
-      <p>Email:
-        <input type="email" name="email" required= "required" placeholder="email">
-      </p>
-      <p>Password:
-        <input type="password" name="password" required= "required" placeholder="password">
-      </p>
-      <button type="submit" value="register">Register</button>
-    </form>
-    </div>
-    <script src="" async defer></script>
+    
+    <form method="post" action="/register">
+      <div class="mx-auto" style="width: 300px;">
+  <div class="form-group">
+    <h2>TinyApp Register</h2>
+    <label for="exampleInputEmail1">Email address</label>
+    <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" name="password" id="exampleInputPassword1" placeholder="Password">
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+</form>
+    
   </body>
 </html>
