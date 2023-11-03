@@ -1,6 +1,7 @@
-
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
+
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -215,6 +216,7 @@ app.get('/register', (req, res) => {
 // user registers with email and password
 app.post('/register', (req, res) => {
   const { email, password } = req.body; // grab email and password from body
+  const hashedPassword = bcrypt.hashSync(password, 10);
   const id = generateRandomString(6); // generate random ID
   if (!email || !password) {
     return res.status(400).send('Please enter a email and/or password');
