@@ -83,10 +83,27 @@ const validateURLPermission = function(database, shortURL, user_id) {
   return false;
 };
 
+/**
+ * Generates a random string from characters variable
+ * @param {Number} Number
+ * @returns {Number}
+*/
+
+const generateRandomString = function(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
 module.exports = {
   getUserByEmail,
   validateUser,
   urlsForUser,
   verifyURL,
   validateURLPermission,
+  generateRandomString
 };
