@@ -3,8 +3,8 @@ const bcrypt = require('bcryptjs');
 
 const { getUserByEmail,
   validateUser,
-  displayURLByID,
-  redirectURL,
+  urlsForUser,
+  verifyURL,
   validateURLPermission } = require('../helpers');
 
 const testUsers = {
@@ -64,29 +64,29 @@ describe('#validateUser', function() {
   });
 });
 
-describe('#displayURLByID', function() {
+describe('#urlsForUser', function() {
   it('return stored key:value pair of shortURL and longURL, if they are in user profile', function() {
-    const URL = displayURLByID(urlDatabase, 'userRandomID');
+    const URL = urlsForUser(urlDatabase, 'userRandomID');
     const expectedURL = { i3BoGr: 'https://www.google.ca' };
     assert.deepEqual(URL, expectedURL);
   });
 
   it('should return if user does not have any stored URLS', function() {
-    const URL = displayURLByID(urlDatabase, 'userRandomID5');
+    const URL = urlsForUser(urlDatabase, 'userRandomID5');
     const expectedURL = null;
     assert.deepEqual(URL, expectedURL);
   });
 });
 
-describe('#redirectURL', function() {
+describe('#verifyURL', function() {
   it('return long URL if short URL is found in urlDatabase', function() {
-    const URL = redirectURL(urlDatabase, 'i3BoGr');
+    const URL = verifyURL(urlDatabase, 'i3BoGr');
     const expectedURL = "https://www.google.ca";
     assert.equal(URL, expectedURL);
   });
 
   it('return null if short URL is not found in urlDatabase', function() {
-    const URL = redirectURL(urlDatabase, 'i3B3dg');
+    const URL = verifyURL(urlDatabase, 'i3B3dg');
     const expectedURL = null;
     assert.equal(URL, expectedURL);
   });
