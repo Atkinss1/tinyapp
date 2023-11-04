@@ -5,7 +5,8 @@ const { getUserByEmail,
   validateUser,
   urlsForUser,
   verifyURL,
-  validateURLPermission } = require('../helpers');
+  validateURLPermission,
+  generateRandomString } = require('../helpers');
 
 const testUsers = {
   "userRandomID": {
@@ -103,5 +104,13 @@ describe('#validateURLPermission', function() {
     const result = validateURLPermission(urlDatabase, 'i3BoGr', "user2RandomID");
     const expectedResult = false;
     assert.equal(result, expectedResult);
+  });
+});
+
+describe('#generateRandomString', function() {
+  it('should return a random string with the length being the parameter', function() {
+    const result = generateRandomString(6);
+    const expectedResult = result.length === 6;
+    assert.equal(true, expectedResult);
   });
 });
