@@ -20,8 +20,8 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
             </p>
-            <form method="post" action="/urls/<%= id %>">
-              <input type="text" name="longURL" placeholder="Update URL" required="required">
+            <form method="post" action="/urls/<%= id %>" onsubmit="return validateForm()">
+              <input type="text" name="longURL" placeholder="Update URL" id="urlInput" required="required">
               
               <button type="submit">Update</button>
               
@@ -45,5 +45,14 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
+    <script>function validateForm() {
+      const urlInput = document.getElementById('urlInput').value;
+      if (urlInput.startsWith('http://') || urlInput.startsWith('https://')) {
+        return true;
+      }
+      alert('Please enter a valid URL with "http://" or "https://"');
+      return false;
+    } 
+    </script>
   </body>
 </html>
