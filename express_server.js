@@ -131,41 +131,6 @@ app.post('/urls', function(req, res) {
   res.redirect('/urls/' + key); // required to redirect to /urls/id but I think it is friendlier if we redirect to /urls to show URL added to the list
 });
 
-// user deletes url
-app.post('/urls/:id/delete', function(req, res) {
-  if (!req.session.user_id) { // if user is not logged in, redirect to login
-    return res.status(403).send('You must be logged in to delete a URL.');
-  }
-  
-  const user_id = req.session.user_id;
-  const id = req.params.id;
-  if (!validateURLPermission(urlDatabase, id, user_id)) {
-    return res.status(403).send('You do not own this shortURL, please return to the home page.');
-  }
-
-  delete urlDatabase[id];
-  res.redirect('/urls');
-});
-
-// assigns shortURL when user updates longURL
-app.post('/urls/:id', function(req, res) {
-  if (!req.session.user_id) { // if user is not logged in, redirect to login
-    return res.status(403).send('You must be logged in to edit a URL.');
-  }
-  if (req.body.longURL === '') { // check if user tries to update with empty entry
-    return res.redirect(`/urls/${req.params.id}`);
-  }
-  
-  const user = req.session.user_id;
-  
-  urlDatabase[req.params.id] = {
-    longURL: req.body.longURL,
-    userID: user
-  };
-  
-  res.redirect('/urls');
-});
-
 // allows user to edit long url
 app.get('/edit/:id', function(req, res) {
   const user_id = req.session.user_id;
@@ -187,6 +152,41 @@ app.get('/edit/:id', function(req, res) {
     user
   };
   res.render('urls_show', templateVars);
+});
+
+// assigns shortURL when user updates longURL
+app.post('/urls/:id', function(req, res) {
+  if (!req.session.user_id) { // if user is not logged in, redirect to login
+    return res.status(403).send('You must be logged in to edit a URL.');
+  }
+  if (req.body.longURL === '') { // check if user tries to update with empty entry
+    return res.redirect(`/urls/${req.params.id}`);
+  }
+  
+  const user = req.session.user_id;
+  
+  urlDatabase[req.params.id] = {
+    longURL: req.body.longURL,
+    userID: user
+  };
+  
+  res.redirect('/urls');
+});
+
+// user deletes url
+app.post('/urls/:id/delete', function(req, res) {
+  if (!req.session.user_id) { // if user is not logged in, redirect to login
+    return res.status(403).send('You must be logged in to delete a URL.');
+  }
+  
+  const user_id = req.session.user_id;
+  const id = req.params.id;
+  if (!validateURLPermission(urlDatabase, id, user_id)) {
+    return res.status(403).send('You do not own this shortURL, please return to the home page.');
+  }
+
+  delete urlDatabase[id];
+  res.redirect('/urls');
 });
 
 // displays login page
