@@ -61,7 +61,9 @@ app.get('/urls', function(req, res) {
     longURL,
     user
   };
+
   res.render('urls_index', templateVars);
+
 });
 
 // display create new url page
@@ -77,7 +79,9 @@ app.get('/urls/new', function(req, res) {
     longURL,
     user
   };
+
   res.render('urls_new', templateVars);
+
 });
 
 // display page with long url with its shortened form
@@ -89,9 +93,11 @@ app.get('/urls/:id', function(req, res) {
   }
   
   const id = req.params.id;
+
   if (!validateURLPermission(urlDatabase, id, user_id)) { // check user URLS
     return res.status(403).send('You do not own this shortURL, please return to the home page.');
   }
+
   const user = users[user_id];
   const longURL = urlsForUser(urlDatabase, user_id);
   const templateVars = {
@@ -99,7 +105,9 @@ app.get('/urls/:id', function(req, res) {
     longURL,
     user
   };
+
   res.render('urls_show', templateVars);
+
 });
 
 // display json object
@@ -110,30 +118,39 @@ app.get('/urls.json', (req, res) => {
 // redirect to long url if short url is found in database
 app.get('/u/:id', function(req, res) {
   const longURL = verifyURL(urlDatabase, req.params.id);
+
   if (longURL) {
     return res.redirect(longURL);
   }
+
   res.status(404).json({error: 'Short URL not found'});
+
 });
 
 // user inputs a long url, post then assigns new short url and stores it to database
 app.post('/urls', function(req, res) {
+
   if (!req.session.user_id) { // if user is not logged in, redirect to login
     return res.status(401).send('Please log in to visit this page.');
   }
+
   if (req.body.longURL === '') {
     return res.status(401).send('Invalid entry, please enter a URL');
   }
+
   let key = generateRandomString(6); // generates shortURL key (stringLength)
   urlDatabase[key] = {
     longURL: req.body.longURL,
     userID: req.session.user_id
   };
+
   res.redirect('/urls/' + key); // required to redirect to /urls/id but I think it is friendlier if we redirect to /urls to show URL added to the list
+
 });
 
 // allows user to edit long url
 app.get('/edit/:id', function(req, res) {
+
   const user_id = req.session.user_id;
   
   if (!req.session.user_id) { // if user is not logged in, redirect to login
@@ -141,6 +158,7 @@ app.get('/edit/:id', function(req, res) {
   }
   
   const id = req.params.id;
+
   if (!validateURLPermission(urlDatabase, id, user_id)) {
     return res.status(403).send('You do not own this shortURL, please return to the home page.');
   }
@@ -152,14 +170,18 @@ app.get('/edit/:id', function(req, res) {
     longURL,
     user
   };
+
   res.render('urls_show', templateVars);
+
 });
 
 // assigns shortURL when user updates longURL
 app.post('/urls/:id', function(req, res) {
+
   if (!req.session.user_id) { // if user is not logged in, redirect to login
     return res.status(403).send('You must be logged in to edit a URL.');
   }
+
   if (req.body.longURL === '') { // check if user tries to update with empty entry
     return res.redirect(`/urls/${req.params.id}`);
   }
@@ -172,22 +194,26 @@ app.post('/urls/:id', function(req, res) {
   };
   
   res.redirect('/urls');
+
 });
 
 // user deletes url
 app.post('/urls/:id/delete', function(req, res) {
+
   if (!req.session.user_id) { // if user is not logged in, redirect to login
     return res.status(403).send('You must be logged in to delete a URL.');
   }
   
   const user_id = req.session.user_id;
   const id = req.params.id;
+
   if (!validateURLPermission(urlDatabase, id, user_id)) {
     return res.status(403).send('You do not own this shortURL, please return to the home page.');
   }
 
   delete urlDatabase[id];
   res.redirect('/urls');
+
 });
 
 // displays login page
@@ -201,16 +227,20 @@ app.get('/login', (req, res) => {
   if (req.session.user_id) { // if use is logged in, redirect to /urls
     return res.redirect('/urls');
   }
+
   res.render('urls_login', templateVars);
+
 });
 
 // user sends email, save cookie
 app.post('/login', function(req, res) {
   const { email, password } = req.body; // grab email and password from body
   const hashedPassword = bcrypt.hashSync(password, 10); // encrypts password
+
   if (!email || !hashedPassword) {
     return res.status(401).send('Please enter a email and/or password');
   }
+
   const user = validateUser(email, password, users); // comparing email/password with database
 
 
@@ -218,7 +248,9 @@ app.post('/login', function(req, res) {
     req.session.user_id = user.id;
     return res.redirect('/urls');
   }
+
   res.status(401).send('Email and/or password was incorrect.');
+
 });
 
 
@@ -230,15 +262,19 @@ app.post('/logout', function(req, res) {
 
 // displays register page
 app.get('/register', (req, res) => {
+
   if (req.session.user_id) { // if use is logged in, redirect to /urls
     return res.redirect('/urls');
   }
+
   const user_id = req.session.user_id;
   const user = users[user_id];
   const templateVars = {
     user
   };
+
   res.render('urls_register', templateVars);
+
 });
 
 // user registers with email and password
@@ -246,21 +282,27 @@ app.post('/register', (req, res) => {
   const { email, password } = req.body; // grab email and password from body
   const id = generateRandomString(6); // generate random ID
   const hashedPassword = bcrypt.hashSync(password, 10); // encrypts password
+
   if (!email || !hashedPassword) {
     return res.status(401).send('Please enter a email and/or password');
   }
+
   const emailInUse = getUserByEmail(email, users);
+
   if (emailInUse) {
     return res.status(400).send('Email is already registered');
   }
+
   users[id] = {
     id,
     email,
     password: hashedPassword,
   };
+
   req.session.user_id = id; // setting cookie with id as a value
 
   res.redirect('/urls');
+
 });
 
 app.listen(PORT, () => {
