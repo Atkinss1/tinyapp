@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
  *Checks users email to users database, if true. Returns userID.
  * @param {email} string,
  * @param {object} object,
- * @returns {userID}
+ * @returns {userID} user object
  */
 
 const getUserByEmail = function(email, database) {
@@ -40,7 +40,7 @@ const validateUser = function(email, password, database) {
  * @param {cookies} user_id
  * @returns object
  */
-const displayURLByID = function(database, user_id) {
+const urlsForUser = function(database, user_id) {
   let URLs = {};
   for (const key in database) {
     if (database[key].userID === user_id) {
@@ -57,7 +57,7 @@ const displayURLByID = function(database, user_id) {
  * @param {req.params.id} shortURL
  * @returns longURL
  */
-const redirectURL = function(database, shortURL) {
+const verifyURL = function(database, shortURL) {
   const urlArray = Object.keys(database);
   const longURL = urlArray.find(key => key === shortURL);
   
@@ -86,7 +86,7 @@ const validateURLPermission = function(database, shortURL, user_id) {
 module.exports = {
   getUserByEmail,
   validateUser,
-  displayURLByID,
-  redirectURL,
-  validateURLPermission
+  urlsForUser,
+  verifyURL,
+  validateURLPermission,
 };
