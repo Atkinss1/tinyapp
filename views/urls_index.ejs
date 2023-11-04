@@ -36,7 +36,9 @@
           <td><form method="post" action="/urls/<%= id %>/delete">
             <button type="submit" value="delete">Delete</button>
           </form>
-            <td><a href="/edit/<%= id %>">Edit</a>
+            <td><form method="get" action="/edit/<%= id %>">
+              <button type="submit" value="edit">Edit</button>
+            </form>
             </td>
           </td>
       </tr>
