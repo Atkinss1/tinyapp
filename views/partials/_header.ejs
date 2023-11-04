@@ -1,5 +1,5 @@
 <header>
-
+<link rel="stylesheet" href="../style.css">
   <nav class="navbar navbar-expand-md navbar-dark bg-primary">
     <a class="navbar-brand" href="/urls">TinyApp</a>
     <button
@@ -16,24 +16,29 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <% if (!user) { %>
-        <a class="nav-item nav-link" href="/urls" onclick="login()">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new" onclick="login()">Create New URL</a>
+          <a class="nav-item nav-link" href="/urls" onclick="login()">My URLs
+          </a>
+          <a class="nav-item nav-link" href="/urls/new" onclick="login()">
+            Create New URL
+          </a>
           <a class="nav-item nav-link" href="/login">Login</a>
           <a class="nav-item nav-link" href="/register">Register</a>
-        <% } %>
-        <% if (user) { %>
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        
-          Welcome<%= user.email %>
-              <form method="post" action="/logout">
+          
+          <% } %>
+          <% if (user) { %>
+            
+            <a class="nav-item nav-link" href="/urls">My URLs</a>
+            <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+            Welcome<%= user.email %>
+            <form method="post" action="/logout">
               <button type="submit" value="logout">Logout</button>
-              </form>
-        <% } %>
-      </div>
-    </div>
-  </nav>
-</header>
-<script>function login() {
-  alert("Please login to visit this page")
-}</script>
+            </form>
+            <% } %>
+            
+          </div>
+          </div>
+        </nav>
+      </header>
+      <script>function login() {
+        alert("Please login to visit this page")
+      }</script>
